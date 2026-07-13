@@ -1,0 +1,5 @@
+#!/bin/sh
+if [ "$1" = "-c" ] && [ -n "$2" ]; then
+    shift; set -- $1; shift
+fi
+exec docker exec -i -u 1000 -e SSH_ORIGINAL_COMMAND forgejo forgejo "$@"

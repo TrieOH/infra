@@ -1,0 +1,57 @@
+services:
+  forgejo:
+    image: codeberg.org/forgejo/forgejo:10
+    container_name: forgejo
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - GITEA__server__DOMAIN=${FORGEJO_DOMAIN}
+      - GITEA__server__SSH_DOMAIN=${FORGEJO_SSH_DOMAIN}
+      - GITEA__server__ROOT_URL=${FORGEJO_ROOT_URL}
+      - GITEA__server__SSH_PORT=${FORGEJO_SSH_PORT}
+      - GITEA__server__START_SSH_SERVER=false
+      - GITEA__database__DB_TYPE=postgres
+      - GITEA__database__HOST=postgres:5432
+      - GITEA__database__NAME=${FORGEJO_DB_NAME}
+      - GITEA__database__USER=${FORGEJO_DB_USER}
+      - GITEA__database__PASSWD=${FORGEJO_DB_PASSWORD}
+      - GITEA__security__INSTALL_LOCK=true
+      - GITEA__security__SECRET_KEY=${FORGEJO_SECRET_KEY}
+      - GITEA__oauth2__JWT_SECRET=${FORGEJO_JWT_SECRET}
+    volumes:
+      - forgejo-data:/data
+    networks:
+      - caddy-net
+      - forgejo-db
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: forgejo-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${FORGEJO_DB_NAME}
+      - POSTGRES_USER=${FORGEJO_DB_USER}
+      - POSTGRES_PASSWORD=${FORGEJO_DB_PASSWORD}
+    volumes:
+      - forgejo-db-data:/var/lib/postgresql/data
+    networks:
+      - forgejo-db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${FORGEJO_DB_USER} -d ${FORGEJO_DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+networks:
+  caddy-net:
+    external: true
+  forgejo-db:
+    internal: true
+
+volumes:
+  forgejo-data:
+  forgejo-db-data:
