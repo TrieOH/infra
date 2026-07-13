@@ -23,7 +23,7 @@ services:
       - GITEA__security__SECRET_KEY=${FORGEJO_SECRET_KEY}
       - GITEA__oauth2__JWT_SECRET=${FORGEJO_JWT_SECRET}
     volumes:
-      - forgejo-data:/data
+      - ./data/forgejo:/data
     networks:
       - caddy-net
       - forgejo-db
@@ -37,7 +37,7 @@ services:
       - POSTGRES_USER=${FORGEJO_DB_USER}
       - POSTGRES_PASSWORD=${FORGEJO_DB_PASSWORD}
     volumes:
-      - forgejo-db-data:/var/lib/postgresql/data
+      - ./data/postgres:/var/lib/postgresql/data
     networks:
       - forgejo-db
     healthcheck:
@@ -51,7 +51,3 @@ networks:
     external: true
   forgejo-db:
     internal: true
-
-volumes:
-  forgejo-data:
-  forgejo-db-data:

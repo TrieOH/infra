@@ -16,7 +16,7 @@ sudo chmod +x /usr/local/bin/forgejo-shell /usr/local/bin/gitea
 id git >/dev/null 2>&1 || sudo useradd -m -s /usr/local/bin/forgejo-shell git
 sudo usermod -s /usr/local/bin/forgejo-shell git
 
-VOLUME_PATH=$(docker volume inspect forgejo_forgejo-data --format '{{ .Mountpoint }}')
+VOLUME_PATH="$(pwd)/forgejo/data/forgejo"
 sudo mkdir -p /etc/ssh/sshd_config.d
 cat <<SSHD | sudo tee /etc/ssh/sshd_config.d/50-forgejo.conf >/dev/null
 Match User git
@@ -26,7 +26,7 @@ Match User git
 SSHD
 
 sudo sshd -t
-sudo systemctl reload sshd
+sudo systemctl reload ssh 2>/dev/null || sudo systemctl reload sshd
 
 . ./forgejo/.env
 echo "done: https://${FORGEJO_DOMAIN} | ssh -T git@localhost"
