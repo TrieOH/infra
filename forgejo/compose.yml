@@ -30,6 +30,22 @@ services:
       - caddy-net
       - forgejo-db
 
+  forgejo-runner:
+    image: code.forgejo.org/forgejo/runner:12
+    container_name: forgejo-runner
+    restart: unless-stopped
+    depends_on:
+      forgejo:
+        condition: service_healthy
+    environment:
+      DOCKER_HOST: tcp://forgejo-dind:2375
+    networks:
+      - internal
+    volumes:
+      - ./runner/config.yml:/data/config.yml
+      - ./runner/data:/data
+    command: /bin/sh -c "sleep 5 && forgejo-runner daemon --config /data/config.yml"
+
   postgres:
     image: postgres:16-alpine
     container_name: forgejo-db
