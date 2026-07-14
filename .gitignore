@@ -1,3 +1,7 @@
 forgejo/.env
 caddy/.env
 forgejo/data/
+mox/certs
+mox/data
+mox/config
+!mox/config/mox.conf
