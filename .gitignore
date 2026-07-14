@@ -1,3 +1,4 @@
+.env
 forgejo/.env
 caddy/.env
 forgejo/data/
