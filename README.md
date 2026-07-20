@@ -22,3 +22,31 @@ serviço no `services:` já é o DNS dele), `just reload-caddy`.
 SSH do Forgejo continua fora do compose por natureza, sshd do host +
 `docker exec` (ver `forgejo/ssh/`), porque o roteamento SSH tem que existir
 antes do Docker entrar em cena.
+
+## Forgejo Actions Runner
+
+O runner (`forgejo-runner`) não se registra sozinho — depois de subir o compose, é preciso registrar manualmente uma vez:
+
+```bash
+docker run --rm -it \
+  --network forgejo_internal \
+  -v ~/infra/forgejo/runner/data:/data \
+  -w /data \
+  code.forgejo.org/forgejo/runner:12 \
+  forgejo-runner register --no-interactive \
+  --instance http://forgejo:3000 \
+  --token <TOKEN> \
+  --name trieoh-runner \
+  --labels docker:docker://code.forgejo.org/forgejo/runner-images:ubuntu-22.04
+```
+
+Token vem de Site Admin → Actions → Runners → Create new Runner (ou por repo, Settings → Actions → Runners). 
+
+Depois do registro, sobe o daemon normal:
+```bash
+docker compose -f forgejo/compose.yml up -d forgejo-runner
+```
+Ou se ele ja estiver de pe reinicie
+```bash
+docker compose -f forgejo/compose.yml restart forgejo-runner
+```
