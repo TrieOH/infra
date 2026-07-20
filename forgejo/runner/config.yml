@@ -1,0 +1,40 @@
+log:
+  level: info
+  job_level: info
+
+runner:
+  file: /data/.runner
+  capacity: 1
+  envs:
+    DOCKER_HOST: tcp://forgejo-dind:2375
+  env_file: .env
+  timeout: 3h
+  shutdown_timeout: 3h
+  insecure: false
+  fetch_timeout: 5s
+  fetch_interval: 2s
+  report_interval: 1s
+  labels: ["ubuntu-latest:docker://node:24.15.0-bookworm", "docker:docker://node:24.15.0-bookworm"]
+
+cache:
+  enabled: true
+  dir: "/data/.cache"
+  host: "forgejo-runner"
+  port: 7080
+  proxy_port: 0
+  secret: ""
+  actions_cache_url_override: ""
+
+container:
+  network: "forgejo_internal"
+  enable_ipv6: false
+  privileged: true
+  options: ""
+  workdir_parent:
+  valid_volumes: []
+  docker_host: "automount"
+  force_pull: false
+  force_rebuild: false
+
+host:
+  workdir_parent:

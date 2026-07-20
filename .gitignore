@@ -3,7 +3,7 @@ forgejo/.env
 caddy/.env
 forgejo/data/
 forgejo/runner
-!forgejo/runner/config.example.yml
+!forgejo/runner/config.yml
 mox/certs
 mox/data
 mox/config
