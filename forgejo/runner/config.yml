@@ -26,7 +26,8 @@ cache:
   actions_cache_url_override: ""
 
 container:
-  network: "forgejo_internal"
+  #network: "forgejo_internal"
+  network: "host"
   enable_ipv6: false
   privileged: true
   options: ""
