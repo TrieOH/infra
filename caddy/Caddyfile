@@ -12,6 +12,7 @@
     tls /etc/caddy/certs/trieoh.com_origin.pem /etc/caddy/certs/trieoh.com_origin.key
 }
 
+
 (api_routes) {
     handle /health {
         respond "ok" 200
@@ -187,10 +188,7 @@ http://mail.trieoh.com {
 }
 
 mail.trieoh.com {
-    tls /etc/letsencrypt/live/mail.trieoh.com/fullchain.pem /etc/letsencrypt/live/mail.trieoh.com/privkey.pem
-    handle /.well-known/acme-challenge/* {
-        root * /var/lib/caddy
-    }
+    tls /etc/letsencrypt/live/mta-sts.trieoh.com/fullchain.pem /etc/letsencrypt/live/mta-sts.trieoh.com/privkey.pem
     reverse_proxy mox:8083
 }
 
@@ -202,11 +200,7 @@ http://mta-sts.trieoh.com {
 
 mta-sts.trieoh.com {
     tls /etc/letsencrypt/live/mta-sts.trieoh.com/fullchain.pem /etc/letsencrypt/live/mta-sts.trieoh.com/privkey.pem
-    handle /.well-known/acme-challenge/* {
-        root * /var/lib/caddy
-    }
     reverse_proxy mox:81
-    log
 }
 
 http://autoconfig.trieoh.com {
@@ -217,12 +211,7 @@ http://autoconfig.trieoh.com {
 
 autoconfig.trieoh.com {
     tls /etc/letsencrypt/live/mta-sts.trieoh.com/fullchain.pem /etc/letsencrypt/live/mta-sts.trieoh.com/privkey.pem
-    handle /.well-known/acme-challenge/* {
-        root * /var/lib/caddy
-        file_server
-    }
     reverse_proxy mox:81
-    log
 }
 
 :80, :443 {

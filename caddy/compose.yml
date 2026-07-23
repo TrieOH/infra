@@ -13,6 +13,7 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt:ro
       - /etc/caddy/certs:/etc/caddy/certs:ro
       - caddy-data:/data
+      - /var/lib/caddy/acme:/var/lib/caddy/acme
       - caddy-config:/config
     networks:
       - caddy-net

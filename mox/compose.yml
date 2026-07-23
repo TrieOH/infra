@@ -14,7 +14,6 @@ services:
     volumes:
       - ./config:/mox/config
       - ./data:/mox/data
-      - ./certs:/mox/certs
       - /etc/letsencrypt:/etc/letsencrypt:ro
     command: mox -config /mox/config/mox.conf serve
     healthcheck:
