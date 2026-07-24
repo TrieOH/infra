@@ -30,8 +30,6 @@ services:
       caddy-net:
       forgejo-db:
       internal:
-        aliases:
-          - git.trieoh.com
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/healthz || exit 1"]
       interval: 10s
@@ -68,6 +66,7 @@ services:
     command: ["dockerd", "-H", "tcp://0.0.0.0:2375", "--tls=false"]
     networks:
       - internal
+      - caddy-net
     volumes:
       - forgejo-dind-data:/var/lib/docker
       - buildkit-cache:/var/cache/buildkit
