@@ -49,7 +49,7 @@ groups:
 
       - uid: high-error-rate
         title: High 5xx error rate
-        condition: C
+        condition: D
         for: 10m
         labels:
           severity: warning
@@ -85,7 +85,7 @@ groups:
             datasourceUid: __expr__
             type: math
             model:
-              expression: '(A / B) * 100'
+              expression: '$A / $B * 100'
               refId: C
               type: math
           - refId: D
