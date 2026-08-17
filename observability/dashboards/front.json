@@ -46,7 +46,7 @@
       "title": "Web Trace Volume (experimental — LogsQL)",
       "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victoriatraces-logs" },
       "targets": [
-        { "expr": "* | filter component == \"web\" | stats by (service.name) count() as traces", "legendFormat": "__auto" }
+        { "expr": "component:\"web\" | stats by (service.name) count() as traces", "legendFormat": "__auto" }
       ],
       "options": { "showHeader": true },
       "fieldConfig": { "defaults": {}, "overrides": [] }
