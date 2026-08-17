@@ -1,0 +1,188 @@
+# Grafana alert rules — provisioned via file (see compose.yml mount).
+# Datasource uids referenced here are set in datasources.yml.
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: trieoh-services
+    folder: TrieOH
+    interval: 1m
+    rules:
+      - uid: service-down
+        title: Service down
+        condition: C
+        for: 1m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "{{ $labels.job }} is down"
+        noDataState: Alerting
+        execErrState: Error
+        data:
+          - refId: A
+            datasourceUid: victoriametrics
+            queryType: ""
+            model:
+              expr: 'up{job=~"identityx|informd|payssage|univents"} == 0'
+              instant: true
+              range: false
+              refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+          - refId: C
+            datasourceUid: __expr__
+            type: threshold
+            model:
+              expression: A
+              refId: C
+              type: threshold
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [0]
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+
+      - uid: high-error-rate
+        title: High 5xx error rate
+        condition: C
+        for: 10m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "5xx rate > 5% for {{ $labels.job }} ({{ $values.C | humanize }}%)"
+        noDataState: NoData
+        execErrState: Error
+        data:
+          - refId: A
+            datasourceUid: victoriametrics
+            queryType: ""
+            model:
+              expr: 'sum(rate(http_requests_total{status=~"5.."}[5m])) by (job)'
+              instant: true
+              range: false
+              refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+          - refId: B
+            datasourceUid: victoriametrics
+            queryType: ""
+            model:
+              expr: 'sum(rate(http_requests_total[5m])) by (job)'
+              instant: true
+              range: false
+              refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+          - refId: C
+            datasourceUid: __expr__
+            type: math
+            model:
+              expression: '(A / B) * 100'
+              refId: C
+              type: math
+          - refId: D
+            datasourceUid: __expr__
+            type: threshold
+            model:
+              expression: C
+              refId: D
+              type: threshold
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [5]
+                  operator:
+                    type: and
+                  query:
+                    params: [C]
+
+      - uid: high-p99-latency
+        title: High P99 latency
+        condition: C
+        for: 10m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "P99 latency > 1s ({{ $values.A | humanizeDuration }})"
+        noDataState: NoData
+        execErrState: Error
+        data:
+          - refId: A
+            datasourceUid: victoriametrics
+            queryType: ""
+            model:
+              expr: 'histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))'
+              instant: true
+              range: false
+              refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+          - refId: C
+            datasourceUid: __expr__
+            type: threshold
+            model:
+              expression: A
+              refId: C
+              type: threshold
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [1]
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+
+  - orgId: 1
+    name: trieoh-observability
+    folder: TrieOH
+    interval: 1m
+    rules:
+      - uid: obs-stack-down
+        title: Observability stack component down
+        condition: C
+        for: 2m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "{{ $labels.job }} is not being scraped"
+        noDataState: Alerting
+        execErrState: Error
+        data:
+          - refId: A
+            datasourceUid: victoriametrics
+            queryType: ""
+            model:
+              expr: 'up{job=~"victoria-metrics|victoria-logs|victoria-traces"} == 0'
+              instant: true
+              range: false
+              refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+          - refId: C
+            datasourceUid: __expr__
+            type: threshold
+            model:
+              expression: A
+              refId: C
+              type: threshold
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [0]
+                  operator:
+                    type: and
+                  query:
+                    params: [A]

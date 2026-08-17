@@ -1,0 +1,72 @@
+{
+  "title": "TrieOH — Front (Web)",
+  "uid": "trieoh-front",
+  "tags": ["trieoh", "front"],
+  "timezone": "browser",
+  "refresh": "30s",
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "gridPos": { "h": 3, "w": 24, "x": 0, "y": 0 },
+      "title": "Front (Web) tracing",
+      "options": {
+        "mode": "markdown",
+        "content": "Front spans land here once the BFF tracing plan ships (phase 2).\n\nFront spans share the backend `service.name` (per the naming plan) and are tagged `component=web`, so these panels filter to client-side spans only. Until then the panels are empty by design.\n\n- **Recent Traces / Error Traces**: Jaeger search on `service` + `component=web` tag.\n- **Web Trace Volume**: LogsQL stats over Victoria Traces (experimental — verify field names against the live store)."
+      },
+      "datasource": { "type": "datasource", "uid": "grafana" }
+    },
+    {
+      "id": 2,
+      "type": "traces",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 3 },
+      "title": "Recent Traces (web)",
+      "datasource": { "type": "jaeger", "uid": "${DS_TRACES}" },
+      "targets": [
+        { "service": "$service", "operation": "", "tags": "component=web", "limit": 20, "queryType": "search" }
+      ],
+      "options": { "frameType": "data" }
+    },
+    {
+      "id": 3,
+      "type": "traces",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 13 },
+      "title": "Error Traces (web)",
+      "datasource": { "type": "jaeger", "uid": "${DS_TRACES}" },
+      "targets": [
+        { "service": "$service", "operation": "", "tags": "component=web,error=true", "limit": 20, "queryType": "search" }
+      ],
+      "options": { "frameType": "data" }
+    },
+    {
+      "id": 4,
+      "type": "table",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 23 },
+      "title": "Web Trace Volume (experimental — LogsQL)",
+      "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victoriatraces-logs" },
+      "targets": [
+        { "expr": "* | filter component == \"web\" | stats by (service.name) count() as traces", "legendFormat": "__auto" }
+      ],
+      "options": { "showHeader": true },
+      "fieldConfig": { "defaults": {}, "overrides": [] }
+    }
+  ],
+  "templating": {
+    "list": [
+      { "name": "DS_VM", "type": "datasource", "pluginId": "victoriametrics-metrics-datasource", "hide": 2 },
+      { "name": "DS_TRACES", "type": "datasource", "pluginId": "jaeger", "hide": 2 },
+      {
+        "name": "service",
+        "type": "query",
+        "datasource": { "type": "victoriametrics-metrics-datasource", "uid": "${DS_VM}" },
+        "query": "label_values(http_requests_total, job)",
+        "label": "Service",
+        "hide": 0,
+        "multi": true,
+        "includeAll": true,
+        "current": { "text": "All", "value": "$__all" }
+      }
+    ]
+  }
+}

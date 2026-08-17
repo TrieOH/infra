@@ -76,6 +76,7 @@ services:
       - grafana_data:/var/lib/grafana
       - ./datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
       - ./dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./provisioning/alerting.yml:/etc/grafana/provisioning/alerting/alerting.yml:ro
     networks:
       - obs-net
       - caddy-net

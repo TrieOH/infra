@@ -203,7 +203,7 @@
       },
       "targets": [
         {
-          "expr": "rate(http_request_duration_seconds_sum{job=\"identityx\"}[5m]) / rate(http_request_duration_seconds_count{job=\"identityx\"}[5m])",
+          "expr": "sum(rate(http_request_duration_seconds_sum{job=\"identityx\"}[5m])) / sum(rate(http_request_duration_seconds_count{job=\"identityx\"}[5m]))",
           "legendFormat": "avg"
         }
       ],
@@ -390,7 +390,7 @@
       },
       "targets": [
         {
-          "expr": "sum(rate(http_request_duration_seconds_bucket{job=\"identityx\"}[5m])) by (le)",
+          "expr": "sum(rate(http_request_duration_seconds_bucket{job=\"identityx\", route=~\"$route\"}[5m])) by (le)",
           "legendFormat": "{{le}}",
           "format": "heatmap"
         }
@@ -410,7 +410,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 28
       },
       "title": "Recent Traces",
       "datasource": {
@@ -431,56 +431,115 @@
     },
     {
       "id": 10,
-      "type": "logs",
+      "type": "traces",
       "gridPos": {
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 30
+        "y": 38
       },
-      "title": "Logs",
+      "title": "Error Traces",
       "datasource": {
-        "type": "victoriametrics-logs-datasource",
-        "uid": "${DS_VL}"
+        "type": "jaeger",
+        "uid": "${DS_TRACES}"
       },
       "targets": [
         {
-          "expr": "{service=\"identityx\"}",
-          "legendFormat": ""
+          "service": "identityx",
+          "operation": "",
+          "tags": "error=true",
+          "limit": 20,
+          "queryType": "search"
         }
       ],
       "options": {
-        "dedupStrategy": "none",
-        "enableLogDetails": true,
-        "sortOrder": "Descending",
-        "wrapLogMessage": false
+        "frameType": "data"
       }
     },
     {
-      "id": 11,
-      "type": "logs",
+      "type": "timeseries",
       "gridPos": {
         "h": 8,
-        "w": 24,
+        "w": 12,
         "x": 0,
-        "y": 40
+        "y": 20
       },
-      "title": "Errors & Warnings",
+      "title": "Errors/sec by Route",
       "datasource": {
-        "type": "victoriametrics-logs-datasource",
-        "uid": "${DS_VL}"
+        "type": "victoriametrics-metrics-datasource",
+        "uid": "${DS_VM}"
       },
       "targets": [
         {
-          "expr": "{service=\"identityx\", level=~\"error|warn\"}",
-          "legendFormat": ""
+          "expr": "sum(rate(http_requests_total{job=\"identityx\", status=~\"5..\"}[1m])) by (route)",
+          "legendFormat": "{{route}}"
         }
       ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "lineWidth": 2
+          }
+        }
+      },
       "options": {
-        "dedupStrategy": "none",
-        "enableLogDetails": true,
-        "sortOrder": "Descending"
-      }
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        }
+      },
+      "id": 11
+    },
+    {
+      "type": "bargauge",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 20
+      },
+      "title": "Slowest Endpoints (P99)",
+      "datasource": {
+        "type": "victoriametrics-metrics-datasource",
+        "uid": "${DS_VM}"
+      },
+      "targets": [
+        {
+          "expr": "topk(5, histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{job=\"identityx\", route=~\"$route\"}[5m])) by (le, route)))",
+          "legendFormat": "{{route}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.5
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient"
+      },
+      "id": 12
     }
   ]
 }
