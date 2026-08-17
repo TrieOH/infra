@@ -405,7 +405,7 @@
     },
     {
       "id": 9,
-      "type": "traces",
+      "type": "table",
       "gridPos": {
         "h": 10,
         "w": 24,
@@ -414,24 +414,26 @@
       },
       "title": "Recent Traces",
       "datasource": {
-        "type": "jaeger",
-        "uid": "${DS_TRACES}"
+        "type": "victoriametrics-logs-datasource",
+        "uid": "victoriatraces-logs"
       },
       "targets": [
         {
-          "service": "informd",
-          "operation": "",
-          "limit": 20,
-          "queryType": "search"
+          "expr": "resource_attr:service.name:\"informd\" | stats by (trace_id) max(_time) as _time, count() as spans, any(name) as name | sort by (_time) desc | limit 20 | fields _time, name, trace_id, spans",
+          "legendFormat": "__auto"
         }
       ],
       "options": {
-        "frameType": "data"
+        "showHeader": true
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
       }
     },
     {
       "id": 10,
-      "type": "traces",
+      "type": "table",
       "gridPos": {
         "h": 10,
         "w": 24,
@@ -440,20 +442,21 @@
       },
       "title": "Error Traces",
       "datasource": {
-        "type": "jaeger",
-        "uid": "${DS_TRACES}"
+        "type": "victoriametrics-logs-datasource",
+        "uid": "victoriatraces-logs"
       },
       "targets": [
         {
-          "service": "informd",
-          "operation": "",
-          "tags": "error=true",
-          "limit": 20,
-          "queryType": "search"
+          "expr": "resource_attr:service.name:\"informd\" status_code:\"2\" | sort by (_time) desc | limit 20 | math duration / 1000000 as duration_ms | fields _time, name, trace_id, duration_ms",
+          "legendFormat": "__auto"
         }
       ],
       "options": {
-        "frameType": "data"
+        "showHeader": true
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
       }
     },
     {

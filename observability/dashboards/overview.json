@@ -83,7 +83,7 @@
       "title": "Trace Volume by Service (experimental — LogsQL)",
       "type": "table",
       "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victoriatraces-logs" },
-      "targets": [{ "expr": "* | stats by (service.name) count() as traces", "legendFormat": "__auto" }],
+      "targets": [{ "expr": "* | stats by (\"resource_attr:service.name\") count() as traces", "legendFormat": "__auto" }],
       "options": { "showHeader": true },
       "fieldConfig": { "defaults": {}, "overrides": [] }
     }
