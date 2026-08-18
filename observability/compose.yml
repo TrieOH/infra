@@ -1,6 +1,7 @@
 services:
   victoria-metrics:
-    image: victoriametrics/victoria-metrics:latest
+    # Pinned 2026-08-18 (latest stable at the time).
+    image: victoriametrics/victoria-metrics:v1.150.0
     container_name: victoria-metrics
     restart: unless-stopped
     command:
@@ -23,7 +24,8 @@ services:
       start_period: 10s
 
   victoria-logs:
-    image: victoriametrics/victoria-logs:latest
+    # Pinned 2026-08-18 (latest stable at the time).
+    image: victoriametrics/victoria-logs:v1.52.0
     container_name: victoria-logs
     restart: unless-stopped
     command:
@@ -44,7 +46,8 @@ services:
       start_period: 10s
 
   victoria-traces:
-    image: victoriametrics/victoria-traces:latest
+    # Pinned 2026-08-18 (latest stable at the time).
+    image: victoriametrics/victoria-traces:v0.11.0
     container_name: victoria-traces
     restart: unless-stopped
     command:
