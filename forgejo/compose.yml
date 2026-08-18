@@ -22,6 +22,7 @@ services:
       - GITEA__security__INSTALL_LOCK=true
       - GITEA__security__SECRET_KEY=${FORGEJO_SECRET_KEY}
       - GITEA__oauth2__JWT_SECRET=${FORGEJO_JWT_SECRET}
+      - GITEA__actions__ARTIFACT_RETENTION_DAYS=14
       - GITEA__repository__ENABLE_PUSH_CREATE_ORG=true
       - GITEA__repository__ENABLE_PUSH_CREATE_USER=true
     volumes:
