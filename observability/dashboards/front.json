@@ -47,7 +47,7 @@
       },
       "targets": [
         {
-          "expr": "component:\"web\" | stats by (trace_id) max(_time) as _time, count() as spans, any(name) as name | sort by (_time) desc | limit 20 | fields _time, name, trace_id, spans",
+          "expr": "{resource_attr:service.name=~\".*-web\"} | stats by (trace_id) max(_time) as _time, count() as spans, any(name) as name | sort by (_time) desc | limit 20 | fields _time, name, trace_id, spans",
           "legendFormat": "__auto"
         }
       ],
@@ -75,7 +75,7 @@
       },
       "targets": [
         {
-          "expr": "component:\"web\" status_code:\"2\" | sort by (_time) desc | limit 20 | fields _time, name, trace_id, duration",
+          "expr": "{resource_attr:service.name=~\".*-web\"} status_code:\"2\" | sort by (_time) desc | limit 20 | fields _time, name, trace_id, duration",
           "legendFormat": "__auto"
         }
       ],
@@ -103,7 +103,7 @@
       },
       "targets": [
         {
-          "expr": "component:\"web\" | stats by (\"resource_attr:service.name\") count() as traces",
+          "expr": "{resource_attr:service.name=~\".*-web\"} | stats by (\"resource_attr:service.name\") count() as traces",
           "legendFormat": "__auto"
         }
       ],
