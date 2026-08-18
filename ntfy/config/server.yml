@@ -1,0 +1,7 @@
+# ntfy server config — https://ntfy.trieoh.com
+base-url: https://ntfy.trieoh.com
+cache-duration: 12h
+
+# hardening later (when topics need auth):
+# auth-file: /var/lib/ntfy/user.db
+# auth-default-access: deny-all

@@ -1,0 +1,18 @@
+services:
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    container_name: ntfy
+    restart: unless-stopped
+    command:
+      - serve
+    environment:
+      - TZ=UTC
+    volumes:
+      - ./data:/var/lib/ntfy
+      - ./config/server.yml:/etc/ntfy/server.yml:ro
+    networks:
+      - caddy-net
+
+networks:
+  caddy-net:
+    external: true

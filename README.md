@@ -4,6 +4,15 @@ Caddy (Caddyfile estático) + Forgejo (config via env vars nativas do Gitea/Forg
 `GITEA__section__KEY`) + Postgres isolado numa rede `internal: true` só pro Forgejo.
 Um servidor, Docker Compose puro, sem Swarm.
 
+## Serviços
+
+- **caddy** — gateway + TLS (wildcard `*.trieoh.com`)
+- **forgejo** — git + Actions runner (dind)
+- **mox** — mail (SMTP/IMAP)
+- **observability** — Grafana + VictoriaMetrics/Logs/Traces
+- **beszel** — monitoração do servidor
+- **ntfy** — push notifications pro celular (`https://ntfy.trieoh.com`)
+
 ```bash
 cp caddy/.env.example caddy/.env       # ADMIN_USER_NAME / ADMIN_PASSWORD_HASH
 cp forgejo/.env.example forgejo/.env   # domínio, secrets, senha do postgres

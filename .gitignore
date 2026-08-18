@@ -8,4 +8,5 @@ mox/certs
 mox/data
 mox/config
 !mox/config/mox.conf
+ntfy/data/
 
