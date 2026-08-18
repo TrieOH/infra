@@ -60,7 +60,7 @@ services:
         limits:
           cpus: "1.5"
           memory: "3g"
-    image: docker:dind
+    image: docker:29.7.2-dind
     container_name: forgejo-dind
     privileged: true
     restart: unless-stopped
