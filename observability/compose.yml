@@ -65,7 +65,9 @@ services:
       start_period: 10s
 
   grafana:
-    image: grafana/grafana:latest
+    # Pinned 2026-08-18 after 'latest' drift broke Caddy->Grafana DNS (502).
+    # Bump deliberately: docker compose pull grafana && docker compose up -d grafana
+    image: grafana/grafana:13.1.3
     container_name: grafana
     restart: unless-stopped
     env_file:
