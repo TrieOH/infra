@@ -46,8 +46,13 @@ docker run --rm -it \
   --instance http://forgejo:3000 \
   --token <TOKEN> \
   --name trieoh-runner \
-  --labels docker:docker://code.forgejo.org/forgejo/runner-images:ubuntu-22.04
+  --labels "ubuntu-latest:docker://node:24.15.0-bookworm,docker:docker://node:24.15.0-bookworm"
 ```
+
+> Labels agora vivem em `forgejo/runner/config.yml` (o daemon lê de lá e ignora
+> o `--labels` do registro) — mantenha os dois em sincronia. O CLI do docker
+> nos jobs é instalado pelo action composto `.forgejo/actions/setup-docker`
+> (TheTree), que baixa um tarball fixado e o cacheia no runner.
 
 Token vem de Site Admin → Actions → Runners → Create new Runner (ou por repo, Settings → Actions → Runners). 
 
