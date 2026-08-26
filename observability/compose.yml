@@ -80,6 +80,26 @@ services:
       retries: 5
       start_period: 20s
 
+  node-exporter:
+    # Host metrics for Grafana alerts (added 2026-08-26, incident postmortem:
+    # VM previously scraped only the 4 app services, so nothing alerted when
+    # the host pegged 100% CPU for 18 min).
+    image: prom/node-exporter:v1.8.2
+    container_name: node-exporter
+    restart: unless-stopped
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --path.rootfs=/host/root
+      - --no-collector.wifi
+      - --no-collector.ethtool
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/host/root:ro
+    networks:
+      - obs-net
+
 networks:
   obs-net:
     external: true

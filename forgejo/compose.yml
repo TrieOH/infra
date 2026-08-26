@@ -27,6 +27,13 @@ services:
       - GITEA__repository__ENABLE_PUSH_CREATE_USER=true
     volumes:
       - ./data/forgejo:/data
+    deploy:
+      resources:
+        limits:
+          # Forgejo has a slow memory leak (~250MB/day creep, ~2GB under
+          # Actions load). The daily 05:00 cron restart resets it; this cap
+          # is a backstop so a bad day can't eat the whole box.
+          memory: "2g"
     networks:
       caddy-net:
       forgejo-db:
@@ -58,8 +65,12 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1.5"
-          memory: "3g"
+          # Lowered 2026-08-26 after the univents v0.10.12 publish build
+          # saturated the 2-core host (dind held 1.5 of 2 cores, host CPU
+          # 100% for 18 min). 1 CPU / 2.5Gi leaves headroom so Forgejo can
+          # always answer the runner.
+          cpus: "1.0"
+          memory: "2.5g"
     image: docker:29.7.2-dind
     container_name: forgejo-dind
     privileged: true

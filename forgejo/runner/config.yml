@@ -11,9 +11,13 @@ runner:
   timeout: 3h
   shutdown_timeout: 3h
   insecure: false
-  fetch_timeout: 5s
-  fetch_interval: 2s
-  report_interval: 1s
+  # Incident 2026-08-26: report_interval=1s + 5s client timeouts turned a
+  # slow Forgejo into a retry storm (Forgejo ballooned to ~2GB / ~90% CPU,
+  # host CPU pegged 100% for 18 min). Slower intervals let Forgejo breathe
+  # instead of amplifying its own slowness.
+  fetch_timeout: 20s
+  fetch_interval: 5s
+  report_interval: 5s
   labels: ["ubuntu-latest:docker://node:24.15.0-bookworm", "docker:docker://node:24.15.0-bookworm"]
 
 cache:

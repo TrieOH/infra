@@ -186,3 +186,88 @@ groups:
                     type: and
                   query:
                     params: [A]
+
+  - orgId: 1
+    name: trieoh-host
+    folder: TrieOH
+    interval: 1m
+    rules:
+      # Host CPU/ RAM alerts (added 2026-08-26, incident postmortem).
+      # Would have fired ~17:11 during the 18-minute 100% CPU peg.
+      - uid: host-cpu-high
+        title: Host CPU saturated > 90%
+        condition: C
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "Host CPU at {{ $values.C | humanize }}% for 5m"
+        noDataState: NoData
+        execErrState: Error
+        data:
+          - refId: A
+            datasourceUid: victoriametrics
+            queryType: ""
+            model:
+              expr: '100 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100'
+              instant: true
+              range: false
+              refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+          - refId: C
+            datasourceUid: __expr__
+            type: threshold
+            model:
+              expression: A
+              refId: C
+              type: threshold
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [90]
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+
+      - uid: host-mem-high
+        title: Host memory used > 85%
+        condition: C
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "Host memory at {{ $values.C | humanize }}% used"
+        noDataState: NoData
+        execErrState: Error
+        data:
+          - refId: A
+            datasourceUid: victoriametrics
+            queryType: ""
+            model:
+              expr: '100 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100)'
+              instant: true
+              range: false
+              refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+          - refId: C
+            datasourceUid: __expr__
+            type: threshold
+            model:
+              expression: A
+              refId: C
+              type: threshold
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [85]
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
