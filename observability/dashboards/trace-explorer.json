@@ -28,7 +28,7 @@
           "limit": 100
         },
         "includeAll": true,
-        "multi": true,
+        "multi": false,
         "allValue": ".*",
         "format": "regex",
         "refresh": 1,
