@@ -14,14 +14,19 @@
     "list": [
       {
         "name": "service",
-        "type": "query",
         "label": "Service",
+        "type": "query",
         "datasource": {
           "type": "victoriametrics-logs-datasource",
           "uid": "victoriatraces-logs"
         },
-        "definition": "* | stats by (\"resource_attr:service.name\") count() as n | sort by (n) desc",
-        "query": "* | stats by (\"resource_attr:service.name\") count() as n | sort by (n) desc",
+        "query": {
+          "refId": "A",
+          "type": "FieldValue",
+          "field": "resource_attr:service.name",
+          "query": "*",
+          "limit": 100
+        },
         "includeAll": true,
         "multi": true,
         "allValue": ".*",
