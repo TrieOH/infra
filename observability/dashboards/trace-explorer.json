@@ -22,7 +22,7 @@
         },
         "query": {
           "refId": "A",
-          "type": "FieldValue",
+          "type": "fieldValue",
           "field": "resource_attr:service.name",
           "query": "*",
           "limit": 100
@@ -104,7 +104,7 @@
             "uid": "victoriatraces-logs"
           },
           "expr": "\"resource_attr:service.name\":~\"${service}\" | count() as spans",
-          "queryType": "LogsQL"
+          "queryType": "stats"
         }
       ]
     },
@@ -130,7 +130,7 @@
             "uid": "victoriatraces-logs"
           },
           "expr": "\"resource_attr:service.name\":~\"${service}\" | stats by (_time:1m) count() as traces",
-          "queryType": "LogsQL"
+          "queryType": "statsRange"
         }
       ],
       "options": {
@@ -163,7 +163,7 @@
             "uid": "victoriatraces-logs"
           },
           "expr": "\"resource_attr:service.name\":~\"${service}\" name:~\"^(GET|POST|PUT|PATCH|DELETE|OPTIONS|HEAD)\" | stats by (trace_id) max(_time) as _time, count() as spans, any(name) as name | sort by (_time) desc | limit ${limit} | fields _time, name, trace_id, spans",
-          "queryType": "LogsQL"
+          "queryType": "instant"
         }
       ],
       "fieldConfig": {
@@ -212,7 +212,7 @@
             "uid": "victoriatraces-logs"
           },
           "expr": "\"resource_attr:service.name\":~\"${service}\" status_code:\"2\" | stats by (trace_id) max(_time) as _time, count() as spans, any(name) as name | sort by (_time) desc | limit ${limit} | fields _time, name, trace_id, spans",
-          "queryType": "LogsQL"
+          "queryType": "instant"
         }
       ],
       "fieldConfig": {
@@ -261,7 +261,7 @@
             "uid": "victoriatraces-logs"
           },
           "expr": "\"resource_attr:service.name\":~\"${service}\" | stats by (name) count() as spans | sort by (spans) desc | limit 15 | fields name, spans",
-          "queryType": "LogsQL"
+          "queryType": "instant"
         }
       ]
     }
