@@ -180,7 +180,7 @@
                 "value": [
                   {
                     "title": "Open in Explore (waterfall)",
-                    "url": "/explore?schemaVersion=1&panes=%7B%22p1%22%3A%20%7B%22range%22%3A%20%7B%22from%22%3A%20%22now-6h%22%2C%20%22to%22%3A%20%22now%22%7D%2C%20%22queries%22%3A%20%5B%7B%22refId%22%3A%20%22A%22%2C%20%22datasource%22%3A%20%7B%22type%22%3A%20%22jaeger%22%2C%20%22uid%22%3A%20%22victoriatraces%22%7D%2C%20%22queryType%22%3A%20%22traceID%22%2C%20%22query%22%3A%20%22%24%7B__value.raw%7D%22%7D%5D%2C%20%22datasource%22%3A%20%22victoriatraces%22%7D%7D&orgId=1",
+                    "url": "/explore?schemaVersion=1&panes=%7B%22p1%22%3A%20%7B%22range%22%3A%20%7B%22from%22%3A%20%22now-6h%22%2C%20%22to%22%3A%20%22now%22%7D%2C%20%22queries%22%3A%20%5B%7B%22refId%22%3A%20%22A%22%2C%20%22datasource%22%3A%20%7B%22type%22%3A%20%22jaeger%22%2C%20%22uid%22%3A%20%22victoriatraces%22%7D%2C%20%22queryType%22%3A%20%22traceID%22%2C%20%22query%22%3A%20%22${__value.raw}%22%7D%5D%2C%20%22datasource%22%3A%20%22victoriatraces%22%7D%7D&orgId=1",
                     "targetBlank": true
                   }
                 ]
@@ -254,7 +254,7 @@
                 "value": [
                   {
                     "title": "Open in Explore (waterfall)",
-                    "url": "/explore?schemaVersion=1&panes=%7B%22p1%22%3A%20%7B%22range%22%3A%20%7B%22from%22%3A%20%22now-6h%22%2C%20%22to%22%3A%20%22now%22%7D%2C%20%22queries%22%3A%20%5B%7B%22refId%22%3A%20%22A%22%2C%20%22datasource%22%3A%20%7B%22type%22%3A%20%22jaeger%22%2C%20%22uid%22%3A%20%22victoriatraces%22%7D%2C%20%22queryType%22%3A%20%22traceID%22%2C%20%22query%22%3A%20%22%24%7B__value.raw%7D%22%7D%5D%2C%20%22datasource%22%3A%20%22victoriatraces%22%7D%7D&orgId=1",
+                    "url": "/explore?schemaVersion=1&panes=%7B%22p1%22%3A%20%7B%22range%22%3A%20%7B%22from%22%3A%20%22now-6h%22%2C%20%22to%22%3A%20%22now%22%7D%2C%20%22queries%22%3A%20%5B%7B%22refId%22%3A%20%22A%22%2C%20%22datasource%22%3A%20%7B%22type%22%3A%20%22jaeger%22%2C%20%22uid%22%3A%20%22victoriatraces%22%7D%2C%20%22queryType%22%3A%20%22traceID%22%2C%20%22query%22%3A%20%22${__value.raw}%22%7D%5D%2C%20%22datasource%22%3A%20%22victoriatraces%22%7D%7D&orgId=1",
                     "targetBlank": true
                   }
                 ]
