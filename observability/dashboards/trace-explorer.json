@@ -1,0 +1,266 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "graphTooltip": 1,
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": [
+    "traces",
+    "trieoh"
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "service",
+        "type": "query",
+        "label": "Service",
+        "datasource": {
+          "type": "victoriametrics-logs-datasource",
+          "uid": "victoriatraces-logs"
+        },
+        "definition": "* | stats by (\"resource_attr:service.name\") count() as n | sort by (n) desc",
+        "query": "* | stats by (\"resource_attr:service.name\") count() as n | sort by (n) desc",
+        "includeAll": true,
+        "multi": true,
+        "allValue": ".*",
+        "format": "regex",
+        "refresh": 1,
+        "sort": 1
+      },
+      {
+        "name": "limit",
+        "type": "custom",
+        "label": "Max traces",
+        "query": "10, 20, 50, 100",
+        "current": {
+          "text": "20",
+          "value": "20"
+        },
+        "options": [
+          {
+            "text": "10",
+            "value": "10"
+          },
+          {
+            "text": "20",
+            "value": "20"
+          },
+          {
+            "text": "50",
+            "value": "50"
+          },
+          {
+            "text": "100",
+            "value": "100"
+          }
+        ]
+      },
+      {
+        "name": "operation",
+        "type": "textbox",
+        "label": "Filter by operation (regex)",
+        "query": ".*",
+        "current": {
+          "text": ".*",
+          "value": ".*"
+        }
+      }
+    ]
+  },
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "Trace Explorer",
+  "uid": "trace-explorer",
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Spans (selected services)",
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "victoriatraces-logs"
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "victoriatraces-logs"
+          },
+          "expr": "\"resource_attr:service.name\":~\"${service}\" | count() as spans",
+          "queryType": "LogsQL"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Trace volume (per minute)",
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "victoriatraces-logs"
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 4,
+        "y": 0
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "victoriatraces-logs"
+          },
+          "expr": "\"resource_attr:service.name\":~\"${service}\" | stats by (_time:1m) count() as traces",
+          "queryType": "LogsQL"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": "table",
+      "title": "Recent traces \u2014 click trace_id for the waterfall",
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "victoriatraces-logs"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 6
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "victoriatraces-logs"
+          },
+          "expr": "\"resource_attr:service.name\":~\"${service}\" name:~\"^(GET|POST|PUT|PATCH|DELETE|OPTIONS|HEAD)\" | stats by (trace_id) max(_time) as _time, count() as spans, any(name) as name | sort by (_time) desc | limit ${limit} | fields _time, name, trace_id, spans",
+          "queryType": "LogsQL"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "trace_id"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Open in Explore (waterfall)",
+                    "url": "/explore?schemaVersion=1&panes=%7B%22p1%22%3A%20%7B%22datasource%22%3A%20%7B%22type%22%3A%20%22jaeger%22%2C%20%22uid%22%3A%20%22victoriatraces%22%7D%2C%20%22queries%22%3A%20%5B%7B%22refId%22%3A%20%22A%22%2C%20%22datasource%22%3A%20%7B%22type%22%3A%20%22jaeger%22%2C%20%22uid%22%3A%20%22victoriatraces%22%7D%2C%20%22queryType%22%3A%20%22traceID%22%2C%20%22query%22%3A%20%22%24%7B__value.raw%7D%22%7D%5D%2C%20%22range%22%3A%20%7B%22from%22%3A%20%22now-6h%22%2C%20%22to%22%3A%20%22now%22%7D%7D%7D&orgId=1",
+                    "targetBlank": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "type": "table",
+      "title": "Error traces (status=error)",
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "victoriatraces-logs"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 6
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "victoriatraces-logs"
+          },
+          "expr": "\"resource_attr:service.name\":~\"${service}\" status_code:\"2\" | stats by (trace_id) max(_time) as _time, count() as spans, any(name) as name | sort by (_time) desc | limit ${limit} | fields _time, name, trace_id, spans",
+          "queryType": "LogsQL"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "trace_id"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Open in Explore (waterfall)",
+                    "url": "/explore?schemaVersion=1&panes=%7B%22p1%22%3A%20%7B%22datasource%22%3A%20%7B%22type%22%3A%20%22jaeger%22%2C%20%22uid%22%3A%20%22victoriatraces%22%7D%2C%20%22queries%22%3A%20%5B%7B%22refId%22%3A%20%22A%22%2C%20%22datasource%22%3A%20%7B%22type%22%3A%20%22jaeger%22%2C%20%22uid%22%3A%20%22victoriatraces%22%7D%2C%20%22queryType%22%3A%20%22traceID%22%2C%20%22query%22%3A%20%22%24%7B__value.raw%7D%22%7D%5D%2C%20%22range%22%3A%20%7B%22from%22%3A%20%22now-6h%22%2C%20%22to%22%3A%20%22now%22%7D%7D%7D&orgId=1",
+                    "targetBlank": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "type": "table",
+      "title": "Top operations",
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "victoriatraces-logs"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 15
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "victoriatraces-logs"
+          },
+          "expr": "\"resource_attr:service.name\":~\"${service}\" | stats by (name) count() as spans | sort by (spans) desc | limit 15 | fields name, spans",
+          "queryType": "LogsQL"
+        }
+      ]
+    }
+  ],
+  "__inputs": [],
+  "id": null
+}
